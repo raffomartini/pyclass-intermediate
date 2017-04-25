@@ -34,6 +34,8 @@ class PriceRange(object):
     def low(self,value):
         validators.is_number(value)
         validators.is_positive(value)
+        if value > getattr(self, 'high', float('inf')):
+            raise ValueError('Must be lower than self the high value')
         self._low = value
 
     @property
@@ -44,6 +46,8 @@ class PriceRange(object):
     def high(self,value):
         validators.is_number(value)
         validators.is_positive(value)
+        if value < getattr(self, 'high', float('-inf')):
+            raise ValueError('Must be higher than self the high value')
         self._high = value
 
     @property
