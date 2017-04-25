@@ -54,6 +54,8 @@ class Tyre(Circle):
         # unbound method call
         return 1.25 * Circle.circumference(self)
 
+    __circumference = circumference
+
 def customer_2():
     t = Tyre(22)
     print 'a tyre of radius', 22
@@ -88,10 +90,12 @@ def customer_4():
 # Thou shalt not directyl access the radius
 # inside area methods. Area methods must
 # infer the radius from the circumference.
+# --> this requires name mangling
 
 # ISO-123456-fake
 # Circle instances must not store the radius
-# A circle instance must store the diameter and ONLT the diameter.
+# A circle instance must store the diameter and ONLY the diameter.
+# --> this requires properties
 
 def customer_5():
     pass

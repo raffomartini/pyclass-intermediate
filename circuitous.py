@@ -25,6 +25,20 @@ static methond      Class.method()
 class method        Class.method()
     implicitly receives the class obj as first argument
      useful for alternate constructors
+     
+name mangling       __name --> _Class__name
+    useful for keeping an extra reference to internal dependencies
+    to be used when you expect somebody to override your method
+     
+Liskov substitution principle
+    a child should be substitutable for the parent in all situations
+    
+Open/closed principle
+    a class should be open for extension (inheritance)
+    and closed for modifications
+    overrides should have no surprises/side-effects
+    
+
 '''
 
 from collections import namedtuple
@@ -81,11 +95,15 @@ class Circle(object):
 
     def area(self):
         'Quadrature on a planar shape of uniform revolution'
+        radius = self.__circumference() / PI / 2.0
         return PI * self.radius ** 2
 
     def circumference(self):
         'Perimeter of a circle'
         return PI * self.radius * 2
+
+    # private reference to protect the internal reference in the method area
+    __circumference = circumference
 
     @staticmethod
     # used so you can call Circle.angle_to_grade() without defining an instance first
