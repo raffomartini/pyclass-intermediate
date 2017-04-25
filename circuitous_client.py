@@ -79,6 +79,22 @@ def customer_4():
     print 'has a radius of {:.2f}'.format(c.radius)
     print 'has an area of {:.2f}'.format(c.area())
 
+# Customer 5: the government
+# we like to micromanage
+# we'll tell you not just WHAT to build
+# but also HOW to build it
+
+# ISO-12345-fake
+# Thou shalt not directyl access the radius
+# inside area methods. Area methods must
+# infer the radius from the circumference.
+
+# ISO-123456-fake
+# Circle instances must not store the radius
+# A circle instance must store the diameter and ONLT the diameter.
+
+def customer_5():
+    pass
 
 if __name__ == '__main__':
     print
@@ -86,4 +102,5 @@ if __name__ == '__main__':
     # customer_1()
     # customer_2()
     # customer_3()
-    customer_4()
+    # customer_4()
+    customer_5()

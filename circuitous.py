@@ -35,10 +35,10 @@ Version = namedtuple('Version', 'major minor patch')
 
 PI = math.pi
 
-class Circle:
+class Circle(object):
     'an advanced circle analytics toolkit'
 
-    version = Version(0,3,1)
+    version = Version(0,4,1)
     # you increase the major when you break compatibility
     # you increase the minor when you add features
     # you increase the revision when you patch
@@ -47,6 +47,27 @@ class Circle:
     def __init__(self, radius):
         'very few people would read docstring on a __method'
         self.radius = radius
+
+    '''
+    Old way of defining properties:
+    def get_radius(self):
+        return self.diameter / 2.0
+
+    def set_radius(self, radius):
+        self.diameter = radius * 2.0
+
+    radius = property(get_radius, set_radius)
+    '''
+
+    # better way of defining properties
+    @property
+    def radius(self):
+        return self.diameter / 2.0
+
+    @radius.setter
+    def radius(self, radius):
+        self.diameter = radius * 2.0
+
 
     @classmethod
     def from_bbd(cls, diagonal):
