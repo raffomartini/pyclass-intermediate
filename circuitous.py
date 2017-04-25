@@ -21,6 +21,10 @@ unbound method      Class.method(instance)
 static methond      Class.method()
     method called from the class
     but does not require an instance, implicit or explicit 
+    
+class method        Class.method()
+    implicitly receives the class obj as first argument
+     useful for alternate constructors
 '''
 
 from collections import namedtuple
@@ -34,23 +38,32 @@ PI = math.pi
 class Circle:
     'an advanced circle analytics toolkit'
 
-    version = Version(0,2,4)
+    version = Version(0,3,1)
     # you increase the major when you break compatibility
     # you increase the minor when you add features
     # you increase the revision when you patch
 
 
     def __init__(self, radius):
+        'very few people would read docstring on a __method'
         self.radius = radius
+
+    @classmethod
+    def from_bbd(cls, diagonal):
+        'Construct a new Circle from bounding box diagonal'
+        radius = diagonal / math.sqrt(2)
+        return cls(radius)
 
     def __repr__(self):
         return '{}(radius={!r})'.format(self.__class__.__name__,self.radius)
         # !r force to use the repr rather than the str
 
     def area(self):
+        'Quadrature on a planar shape of uniform revolution'
         return PI * self.radius ** 2
 
     def circumference(self):
+        'Perimeter of a circle'
         return PI * self.radius * 2
 
     @staticmethod

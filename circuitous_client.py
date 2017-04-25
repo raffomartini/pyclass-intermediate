@@ -67,10 +67,23 @@ def customer_3():
     print 'a hill with {:.0f} degree incline'.format(angle)
     print 'is a {:.0f}% grade'.format(Circle.angle_to_grade(7))
 
+# Customer 4 - an international graphic company
+# we have money and power
+# We build circles NOT with radius
+# but with bounding box diagonal
+
+def customer_4():
+    bbd = 10
+    c = Circle.from_bbd(bbd)
+    print 'a circle with bounding box diagonal of {}'.format(bbd)
+    print 'has a radius of {:.2f}'.format(c.radius)
+    print 'has an area of {:.2f}'.format(c.area())
+
 
 if __name__ == '__main__':
     print
     # customer_0()
     # customer_1()
     # customer_2()
-    customer_3()
+    # customer_3()
+    customer_4()
