@@ -116,6 +116,13 @@ def get_document(uri):
     '''
     Fetch the content of a document from the database.
     '''
+    with closing(sqlite3.connect(database)) as connection:
+        c = connection.cursor()
+        c.execute('SELECT content FROM Document WHERE uri = ?', (uri,))
+        row = c.fetchone()
+        if row is None:
+            raise UnknownURI(uri)
+        return bz2.decompress(row[0])
 
 def search(*keywords):
     '''

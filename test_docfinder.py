@@ -44,7 +44,8 @@ if 0:
         
 # Test 5
 if 1:
-    print get_document('pep-0237')[:100]
+    # print get_document('pep-0237')[:100]
+    print get_document('pep-0383')[:100]
 
 # Test 6
 if 0:
