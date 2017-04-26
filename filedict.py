@@ -16,8 +16,7 @@ An ABC is like prefabricated housing.
 '''
 
 from collections import MutableMapping
-import os
-import errno
+import os, errno, pickle
 
 class FileDict(MutableMapping):
     'dict-like, backed by the filesystem'
@@ -41,17 +40,28 @@ class FileDict(MutableMapping):
 
     def __delitem__(self, key):
         filepath = os.path.join(self.folder, key)
-        os.remove(filepath)
+        try:
+            os.remove(filepath)
+        except OSError:
+            raise KeyError(key)
 
     def __getitem__(self, key):
         filepath = os.path.join(self.folder, key)
-        with open(filepath) as f:
-            return f.read()
+        try:
+            with open(filepath) as f:
+                # pickle is writing to a file in a specific format
+                # pickle.load is decoding from pickle to obj
+                return pickle.load(f)
+        except IOError:
+            raise KeyError(key)
+
 
     def __setitem__(self, key, value):
         filepath = os.path.join(self.folder, key)
         with open(filepath, 'w') as f:
-            f.write(repr(value))
+            # pickle is writing to a file in a specific format
+            # pickle.dump is encoding from obj to pickle
+            pickle.dump(value, f)
 
     def __len__(self):
         return len(os.listdir(self.folder))
