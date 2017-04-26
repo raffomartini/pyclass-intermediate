@@ -73,7 +73,9 @@ def main():
 
     for t in producers:
         t.join()
+        # when the thread is over, move on
     q.join()
+    # when the queue is empty move on
 
     print 'PARALLEL VERSION'
     print counts.most_common(3)
