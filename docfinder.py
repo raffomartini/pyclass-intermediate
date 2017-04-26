@@ -26,7 +26,7 @@ Tables:
 
 from collections import Counter
 from contextlib import closing
-import sql3, os, bz2, re
+import sqlite3, os, bz2, re
 
 __all__ = ['create_db',
            'add_document',
@@ -44,25 +44,42 @@ class UnknownURI(Exception):
 class DuplicateURI(Exception):
     'URI already exist'
 
-def create_db(force=False):
-    '''
-    Create a new document database.
-    if ``force`` delete the old one.
-    '''
-
 def normalize(words):
     '''
     Standardize words into search terms for better comparison
     Lowercase, de-pluralize, ignore stopwords.
-    :param words: 
-    :return: 
     '''
+    terms = []
+
+    for word in words:
+        #Lowercase,
+        lowercased = word.lower()
+        # ignore stopwords
+        if lowercased not in stopwords:
+            # de - pluralize,
+            # singular
+            singular = lowercased.rstrip('s')
+            terms.append(singular)
+    return terms
+
+    # lowercased = (word.lower() for word in words)
+    # return [word.rstrip('s') for word in lowercased if word not in stopwords]
+
 
 def score_document(text, n=200, pattern=r'[A-Za-z+]'):
     '''
-    Calculate relevance scores for the ``n`` most frequest terms in a document
-    :param text: 
-    :return: 
+    Calculate relevance scores for the ``n`` most frequent terms in a document
+    '''
+    words = re.findall(pattern, text)
+    terms = normalize(words)
+    counts = Counter(terms).most_common(n)
+    total = len(terms)
+    return [(term, count/total) for term,count in counts]
+
+def create_db(force=False):
+    '''
+    Create a new document database.
+    if ``force`` delete the old one.
     '''
 
 def add_document(uri, text):
