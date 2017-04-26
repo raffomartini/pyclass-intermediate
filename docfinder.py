@@ -28,8 +28,21 @@ from collections import Counter
 from contextlib import closing
 import sql3, os, bz2, re
 
+__all__ = ['create_db',
+           'add_document',
+           'get_document',
+           'search',
+           'UnknownURI',
+           'DuplicateURI']
+
 database = 'pepsearch.db'
 stopwords = {'and', 'the', 'of', 'it'}
+
+class UnknownURI(Exception):
+    'URI not found'
+
+class DuplicateURI(Exception):
+    'URI already exist'
 
 def create_db(force=False):
     '''
