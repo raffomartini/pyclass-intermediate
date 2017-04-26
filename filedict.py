@@ -57,11 +57,15 @@ class FileDict(MutableMapping):
 
 
     def __setitem__(self, key, value):
-        filepath = os.path.join(self.folder, key)
-        with open(filepath, 'w') as f:
-            # pickle is writing to a file in a specific format
-            # pickle.dump is encoding from obj to pickle
-            pickle.dump(value, f)
+        try:
+            filepath = os.path.join(self.folder, key)
+        except AttributeError:
+            raise TypeError('FileDict keys must be strings')
+        try:
+            with open(filepath, 'w') as f:
+                pickle.dump(value, f)
+        except IOError:
+            raise ValueError('FileDict keys must be valid filenames')
 
     def __len__(self):
         return len(os.listdir(self.folder))
