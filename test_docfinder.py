@@ -15,11 +15,11 @@ docdir = 'data/peps'
 
 
 # Test 1
-if 1:
+if 0:
     print list(normalize(['Hettinger', 'enumerates', 'AND']))
 
 # Test 2
-if 1:
+if 0:
     filename = 'pep-0238.txt'
     fullname = os.path.join(docdir, filename)
     with open(fullname) as f:
@@ -43,7 +43,7 @@ if 0:
         add_document(uri, text)
         
 # Test 5
-if 0:
+if 1:
     print get_document('pep-0237')[:100]
 
 # Test 6

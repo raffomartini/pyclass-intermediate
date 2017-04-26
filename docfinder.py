@@ -1,29 +1,30 @@
-''' docfinder.py
+'''
 Keyword-searchable document database.
 
 API:
-    create_db() --> None
+    create_db(force=False) --> None
     add_document(uri, text) --> None
     get_document(uri) --> text of the document
-    search(kw0, kw1, kwN) --> URIs of relevant files
-    
+    search(keyword0, keyword1, ... keywordN) --> URIs of relevant files
+
     Errors: UnknownURI, DuplicateURI
-    
-    
+
+
 Tables:
-    
+
     Document
-    =============
-    uri     text    <-- unique index
-    text    blob
-    
+    ============
+    uri     text  <-- unique index
+    content blob
+
     Keyword
-    ==============
-    term    text    <-- index
+    ============
+    term    text  <-- index
     score   real
     uri     text
 '''
 
+from __future__ import division
 from collections import Counter
 from contextlib import closing
 import sqlite3, os, bz2, re
@@ -42,22 +43,17 @@ class UnknownURI(Exception):
     'URI not found'
 
 class DuplicateURI(Exception):
-    'URI already exist'
+    'URI already exists'
 
 def normalize(words):
     '''
-    Standardize words into search terms for better comparison
-    Lowercase, de-pluralize, ignore stopwords.
+    Standardize words into search terms for better comparison.
+    Lowecase, de-pluralize, and ignore stopwords.
     '''
     terms = []
-
     for word in words:
-        #Lowercase,
         lowercased = word.lower()
-        # ignore stopwords
         if lowercased not in stopwords:
-            # de - pluralize,
-            # singular
             singular = lowercased.rstrip('s')
             terms.append(singular)
     return terms
@@ -65,33 +61,63 @@ def normalize(words):
     # lowercased = (word.lower() for word in words)
     # return [word.rstrip('s') for word in lowercased if word not in stopwords]
 
-
-def score_document(text, n=200, pattern=r'[A-Za-z+]'):
+def score_document(text, n=200, pattern=r'[A-Za-z]+'):
     '''
-    Calculate relevance scores for the ``n`` most frequent terms in a document
+    Calculate relevance scores for the ``n`` most
+    frequent terms in a document.
     '''
     words = re.findall(pattern, text)
     terms = normalize(words)
     counts = Counter(terms).most_common(n)
     total = len(terms)
-    return [(term, count/total) for term,count in counts]
+    return [(term, count / total) for term, count in counts]
 
 def create_db(force=False):
     '''
     Create a new document database.
-    if ``force`` delete the old one.
+    If ``force`` delete the old one.
     '''
+    # closing is a context manager form  contextlib,
+    # closes everything that implements the method .close()
+    if force:
+        try:
+            os.remove(database)
+        except OSError:
+            pass # suppress, file not found
+    with closing(sqlite3.connect(database)) as connection:
+        c = connection.cursor()
+        c.execute('CREATE TABLE Document (uri text, content blob)')
+        c.execute('CREATE TABLE Keyword (term text, score real, uri text)')
+        c.execute('CREATE UNIQUE INDEX UriIndex ON Document (uri)')
+        c.execute('CREATE INDEX TermIndex ON Keyword (term)')
 
 def add_document(uri, text):
     '''
-    Insert a new document in the DB
+    Insert a new document into the database.
     '''
+    blob = sqlite3.Binary(bz2.compress(text))
+    # the sqlite3.Binary is helping the parser to sanitize the input in note1
+    with closing(sqlite3.connect(database)) as connection:
+        c = connection.cursor()
+        try:
+            # Note1: used here
+            c.execute('INSERT INTO Document VALUES (?, ?)', (uri, blob))
+        except sqlite3.IntegrityError:
+            raise DuplicateURI(uri)
+
+        args = ((term, score, uri) for term, score in score_document(text))
+        c.executemany('INSERT INTO Keyword VALUES (?, ?, ?)', args)
+
+        # for term, score in score_document(text):
+        #     c.execute('INSERT INTO Keyword VALUES (?, ?, ?)', (term, score, uri))
+        connection.commit()
+
 def get_document(uri):
     '''
-    Fetch a document from the DB
+    Fetch the content of a document from the database.
     '''
 
 def search(*keywords):
     '''
-    Select URIs of relevant documetns from the DB
+    Select URIs of relevant documents from the database.
     '''
