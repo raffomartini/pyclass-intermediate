@@ -76,12 +76,29 @@ class SqlDict(MutableMapping):
         # this upacks the tuple from
         return iter(keys)
 
-if __name__ == '__main__':
-    d = SqlDict('starwars.db')
-    d['hero'] = 'Luke'
-    d['villain'] = 'Darth Vader'
-    print d
+    def copy(self):
+        raise NotImplementedError('Duplicate copies of a SqlDict share the same data')
 
-    del d['villain']
-    d['hero'] = ('Rey', 'Finn')
-    print d
+    def close(self):
+        self.connection.close()
+
+    def __enter__(self):
+        return self
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        self.close()
+
+    '''
+    # don't use it, very efficient way to create memory leaks
+    def __del__(self):
+    '''
+
+if __name__ == '__main__':
+    with SqlDict('starwars.db') as d:
+        d['hero'] = 'Luke'
+        d['villain'] = 'Darth Vader'
+        print d
+
+        del d['villain']
+        d['hero'] = ('Rey', 'Finn')
+        print d
