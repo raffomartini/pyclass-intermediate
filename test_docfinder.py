@@ -43,12 +43,12 @@ if 0:
         add_document(uri, text)
         
 # Test 5
-if 1:
+if 0:
     # print get_document('pep-0237')[:100]
     print get_document('pep-0383')[:100]
 
 # Test 6
-if 0:
+if 1:
     pprint.pprint(search('zip')[:10])
     # pprint.pprint(search('zip', 'barry')[:10])
 
