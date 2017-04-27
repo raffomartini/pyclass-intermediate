@@ -15,11 +15,11 @@ docdir = 'data/peps'
 
 
 # Test 1
-if 0:
+if 1:
     print list(normalize(['Hettinger', 'enumerates', 'AND']))
 
 # Test 2
-if 0:
+if 1:
     filename = 'pep-0238.txt'
     fullname = os.path.join(docdir, filename)
     with open(fullname) as f:
@@ -28,13 +28,13 @@ if 0:
         print term, score
 
 # Test 3
-if 0:
+if 1:
     create_db(force=True)
 
 # Test 4
-if 0:
-    for filename in ['pep-0237.txt', 'pep-0236.txt', 'pep-0235.txt']:
-    # for filename in os.listdir(docdir):
+if 1:
+    # for filename in ['pep-0237.txt', 'pep-0236.txt', 'pep-0235.txt']:
+    for filename in os.listdir(docdir):
         fullname = os.path.join(docdir, filename)
         with open(fullname, 'rb') as f:
             text = f.read()
@@ -43,14 +43,14 @@ if 0:
         add_document(uri, text)
         
 # Test 5
-if 0:
-    # print get_document('pep-0237')[:100]
-    print get_document('pep-0383')[:100]
+if 1:
+    print get_document('pep-0237')[:100]
+    # print get_document('pep-0383')[:100]
 
 # Test 6
 if 1:
-    pprint.pprint(search('zip')[:10])
-    # pprint.pprint(search('zip', 'barry')[:10])
+    # pprint.pprint(search('zip')[:10])
+    pprint.pprint(search('zip', 'barry')[:10])
 
 """
 $ sqlite3 pepsearch.db

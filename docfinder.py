@@ -36,6 +36,11 @@ __all__ = ['create_db',
            'UnknownURI',
            'DuplicateURI']
 
+# class Database:
+#
+#     def __init__(self,database):
+#         self.database = database
+
 database = 'pepsearch.db'
 stopwords = {'and', 'the', 'of', 'it'}
 
@@ -128,3 +133,19 @@ def search(*keywords):
     '''
     Select URIs of relevant documents from the database.
     '''
+
+    query_template = '''
+    SELECT uri 
+    FROM Keyword 
+    WHERE term IN ({marks}) 
+    GROUP BY uri
+    ORDER BY sum(score) DESC
+    '''
+    terms = normalize(keywords)
+    marks = ','.join('?' * len(terms))
+    query = query_template.format(marks=marks)
+    with closing(sqlite3.connect(database)) as connection:
+        c = connection.cursor()
+        c.execute(query, terms)
+        rows = c.fetchall()
+        return [uri for (uri,) in rows]
