@@ -50,7 +50,7 @@ def intert(uri):
     bottle.response.content_type = 'application/json'
     return json.dumps(data, indent=2)
 
-# This adds the capability tosend commands
+# This adds the capability to send commands
 @bottle.get('/cmd/v1/<command>')
 def execute(command):
     argv = command.split()
