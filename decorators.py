@@ -57,6 +57,18 @@ def make_logging(func):
         return result
     return logging_wrapper
 
+def make_caching(func):
+    cache = {}
+    def wrapper(*args):
+        # to deal with kwargs you'd have to convert them in tuple and sort them
+        # kwargs.items().sorted()
+        if args in cache:
+            return cache[args]
+        result = func(*args)
+        cache[args] = result
+        return result
+    return wrapper
+
 # note: original function hidden in the closure
 # >>> collatz = make_logging(collatz)
 # >>> print collatz.__closure__[0].cell_contents
@@ -146,7 +158,7 @@ def collatz(x):
 # collatz = add_docstring(collatz)
 # collatz = make_logging(collatz)
 
-
+@make_caching
 def conjecture(x):
     'recursing collatz arrives at 1 eventually'
     if x < 1:
@@ -159,10 +171,20 @@ def conjecture(x):
 conjecture = register(conjecture)
 conjecture = add_docstring(conjecture)
 
+@make_caching
 def hardwork(x):
     print 'doing hard work'
     time.sleep(1)
     return x + 1
+
+cache = {}
+
+def caching_hardwork(x):
+    if x in cache:
+        return cache[x]
+    result = hardwork(x)
+    cache[x] = result
+    return result
 
 hardwork = register(hardwork)
 hardwork = add_docstring(hardwork)
