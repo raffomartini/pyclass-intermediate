@@ -2,18 +2,21 @@
        The famous Fibonacci sequence: 0, 1, 1, 2, 3, 5,...
        
        # counting the calls to line 14
-       N   recursive   iterative
-       ==  =========   =============
-       5   19          15
-       10  276         55         
-       15  3177        120
-       20  35400       210
-       25  392809      325
-       30  4356586     
+       N   recursive   iterative   memoizing
+       ==  =========   ==========  ===============
+       5   19          15          5
+       10  276         55          10
+       15  3177        120         15
+       20  35400       210         20
+       25  392809      325         25
+       30  4356586     465         30
+           ~phi^N      ~n^phi      ~N
     1: '''
        
+    1: import decorators
        
-    1: def nth(n):
+    1: @decorators.random_cache(maxsize=100)
+       def nth(n):
            '''
            The n-th term in the Fibonacci sequence.
        
@@ -22,20 +25,22 @@
                n-th: (n-1)th + (n-2)th
            '''
        
-           if n == 0:
-               return 0
-           if n == 1:
-               return 1
-           return nth(n-1) + nth(n-2)
+ 5057:     if n == 0:
+    1:         return 0
+ 5056:     if n == 1:
+    1:         return 1
+ 5055:     return nth(n-1) + nth(n-2)
        
-    1: def nth(n):
+       """
+       def nth(n):
            '''
            all recursions can be rewritten as iterations'
            '''
-   30:     a, b = 0, 1
-  465:     for i in xrange(n):
-  435:         a, b = b, a + b
-   30:     return a
+           a, b = 0, 1
+           for i in xrange(n):
+               a, b = b, a + b
+           return a
+       """
        
     1: if __name__ == '__main__':
     1:     import sys
@@ -44,5 +49,5 @@
     1:         n = int(sys.argv[1])
            except (IndexError, ValueError):
                n = 10
-   31:     for i in range(n):
-   30:         print '{}-th:'.format(i), nth(i)
+ 5001:     for i in range(n):
+ 5000:         print '{}-th:'.format(i), nth(i)

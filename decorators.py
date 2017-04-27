@@ -27,6 +27,9 @@ Closure:
 '''
 
 import time, random, math
+import functools
+# functool has a decorator that helps to change function metadata like names etc
+# @functools.wraps() - see below
 
 ### Factory functions #########################
 
@@ -45,7 +48,7 @@ pow561 = make_pow(561)
 powers = map(make_pow, range(100))
 
 pow8 = make_pow(8)
-print pow8.__closure__[0].cell_contents
+# print pow8.__closure__[0].cell_contents
 # 8
 
 def make_logging(func):
@@ -68,6 +71,34 @@ def make_caching(func):
         cache[args] = result
         return result
     return wrapper
+
+maxsize = 3
+def clearing_cache(func):
+    cache = {}
+    def wrapper(*args):
+        if args in cache:
+            return cache[args]
+        result = func(*args)
+        if len(cache) >= maxsize:
+            cache.clear()
+        cache[args] = result
+        return result
+    return wrapper
+
+def random_cache(maxsize=10):
+    def decorator(func):
+        cache = {}
+        @functools.wraps(func)
+        def wrapper(*args):
+            if args in cache:
+                return cache[args]
+            result = func(*args)
+            if len(cache) >= maxsize:
+                del cache[random.choice(list(cache))]
+            cache[args] = result
+            return result
+        return wrapper
+    return decorator
 
 # note: original function hidden in the closure
 # >>> collatz = make_logging(collatz)
@@ -110,7 +141,7 @@ def patch_better_sqrt(x):
 
 math.sqrt = patch_better_sqrt
 
-print theirs.sqrts([4, 81, -25, 16])
+# print theirs.sqrts([4, 81, -25, 16])
 
 
 ### Higher order functions ####################
@@ -171,7 +202,7 @@ def conjecture(x):
 conjecture = register(conjecture)
 conjecture = add_docstring(conjecture)
 
-@make_caching
+@random_cache
 def hardwork(x):
     print 'doing hard work'
     time.sleep(1)
@@ -186,8 +217,8 @@ def caching_hardwork(x):
     cache[x] = result
     return result
 
-hardwork = register(hardwork)
-hardwork = add_docstring(hardwork)
+# hardwork = register(hardwork)
+# hardwork = add_docstring(hardwork)
 
 # print registry
 # help(hardwork)
